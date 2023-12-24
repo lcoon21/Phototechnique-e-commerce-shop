@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <style>
+    .cart-items-list {
+      display: flex;
+      flex-direction: column; /* Изменено направление на вертикальное */
+      gap: 20px;
+    }
+
+    .cart-item {
+      display: flex;
+      align-items: center;
+    }
+
+    .small-image {
+      width: 50px; /* Измените размер в соответствии с вашими требованиями */
+      height: 50px; /* Измените размер в соответствии с вашими требованиями */
+      margin-right: 10px;
+    }
+
+    .item-details {
+      flex: 1;
+    }
+  </style>
+
+  <h1>Моя корзина</h1>
+
+  <div class="cart-items-list">
+    {% for product_item in product_data %}
+      <div class="cart-item">
+        <img src="{{ url_for('static', filename=product_item.image_url) }}" alt="{{ product_item.name }}" class="small-image">
+        <div class="item-details">
+          <h3>{{ product_item.name }}</h3>
+          <p>Количество: {{ product_item.quantity }}</p>
+          <p>Стоимость: ${{ product_item.total_price }}</p>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}

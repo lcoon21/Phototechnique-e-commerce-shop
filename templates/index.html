@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<nav class="navbar-nav ml-auto bg-transparent">
+    <div class="container">
+        <ul class="navbar-nav ml-auto bg-transparent">
+            {% if current_user %}
+                <p class="nav-link text-dark">
+                    {% if current_user.is_authenticated %}
+                        Привет, {{ current_user.username | default('Anonim') }}!
+                    {% else %}
+                        Привет, Гость! Зарегистрируйся или войди, чтобы заказать!
+                    {% endif %}
+                </p>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
+
+<main>
+    {% for product in products %}
+      <div class="product">
+          <img src="{{ url_for('static', filename=product.image_url) }}" alt="{{ product.name }}" class="compressed-image">
+          <h3>{{ product.name }}</h3>
+          <p>Цена: ${{ product.price }}</p>
+          <button onclick="addToCart({{ product.id }})" class="btn btn-secondary" >Добавить в корзину</button>
+      </div>
+    {% endfor %}
+</main>
+
+<script>
+    function addToCart(productId) {
+        // Отправляем запрос на сервер для добавления товара в корзину
+        fetch(`/add_to_cart/${productId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            // Можно передать дополнительные параметры, если необходимо
+            body: JSON.stringify({ quantity: 1 }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Обработка ответа от сервера
+            console.log('Товар добавлен в корзину:', data);
+            // Здесь вы можете обновить интерфейс или выполнить другие действия
+        })
+        .catch(error => {
+            console.error('Ошибка при добавлении товара в корзину:', error);
+        });
+    }
+</script>
+{% endblock %}
+

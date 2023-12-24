@@ -1,0 +1,59 @@
+<!-- templates/register.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      margin-top: 50px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background-color: #0056b3;
+    }
+  </style>
+
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <h2 class="text-center">Регистрация</h2>
+        <form method="POST" action="">
+          {{ form.hidden_tag() }}
+          <div class="form-group">
+            {{ form.name.label }}
+            {{ form.name(class="form-control") }}
+          </div>
+          <div class="form-group">
+            {{ form.email.label }}
+            {{ form.email(class="form-control") }}
+          </div>
+          <div class="form-group">
+            {{ form.password.label }}
+            {{ form.password(class="form-control") }}
+          </div>
+          <div class="form-group">
+            {{ form.confirm_password.label }}
+            {{ form.confirm_password(class="form-control") }}
+          </div>
+          <div class="form-group">
+            {{ form.submit(class="btn btn-primary btn-block") }}
+          </div>
+        </form>
+        <p class="text-center">Уже зарегистрированы? <a href="{{ url_for('login') }}">Войти</a></p>
+      </div>
+    </div>
+  </div>
+{% endblock %}

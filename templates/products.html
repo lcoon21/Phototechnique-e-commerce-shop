@@ -1,0 +1,18 @@
+<!-- templates/products.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Список товаров</h1>
+  <div>
+    {% for product in products %}
+      <div class="product">
+        <img src="{{ url_for('static', filename=product.image_url) }}" alt="{{ product.name }}">
+        <h3>{{ product.name }}</h3>
+        <p>{{ product.description }}</p>
+        <p>Цена: {{ product.price }}</p>
+        <button onclick="addToCart({{ product.id }})">Добавить в корзину</button>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}
