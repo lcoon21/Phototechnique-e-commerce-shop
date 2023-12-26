@@ -24,6 +24,10 @@
           <h3>{{ product.name }}</h3>
           <p>Цена: ${{ product.price }}</p>
           <button onclick="addToCart({{ product.id }})" class="btn btn-secondary" >Добавить в корзину</button>
+          <div class="description">
+                <p>{{ product.description }}</p>
+            </div>
+
       </div>
     {% endfor %}
 </main>
@@ -48,6 +52,15 @@
         .catch(error => {
             console.error('Ошибка при добавлении товара в корзину:', error);
         });
+    }
+    function showDescription(element) {
+        var descriptionElement = element.querySelector('.description');
+        descriptionElement.style.display = 'block';
+    }
+
+    function hideDescription(element) {
+        var descriptionElement = element.querySelector('.description');
+        descriptionElement.style.display = 'none';
     }
 </script>
 {% endblock %}
