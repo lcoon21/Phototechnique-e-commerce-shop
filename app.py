@@ -1,8 +1,8 @@
 from flask import Flask, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import LoginManager, logout_user, login_required
-from models import db, Product, User, Cart, CartItem
+from models import db, Product, User, Cart, CartItem, Order, OrderItem
 from flask_migrate import Migrate
-from forms import RegistrationForm, LoginForm
+from forms import RegistrationForm, LoginForm, OrderForm
 from flask_bcrypt import Bcrypt
 from datetime import datetime
 from flask_login import current_user, login_user
@@ -93,7 +93,7 @@ def add_to_cart(product_id):
             db.session.commit()
 
         # Проверяем, существует ли запись для данного товара в корзине пользователя
-        cart_item = CartItem.query.filter_by(cart_id=cart.id, product_id=product_id).first()
+        cart_item = CartItem.query.filter_by(cart_id=cart.id, product_id=product_id).first() #################
 
         if cart_item:
             # Если запись уже существует, обновляем количество товара
@@ -119,11 +119,10 @@ def my_cart():
     user_id = current_user.id
     cart = Cart.query.filter_by(user_id=user_id).first()
 
-    # if not cart:
-    #     flash('Ваша корзина пуста', 'info')
-    #     return redirect(url_for('index'))
-
-    cart_items = CartItem.query.filter_by(cart_id=cart.id).all()
+    if cart:
+        cart_items = CartItem.query.filter_by(cart_id=cart.id).all() ##############
+    else:
+        return render_template('index.html')
 
     product_data = []
     for cart_item in cart_items:
@@ -132,9 +131,93 @@ def my_cart():
             'name': product.name,
             'image_url': product.image_url,
             'quantity': cart_item.quantity,
-            'total_price': cart_item.quantity * product.price
+            'product_price': product.price,
+            'total_price': cart_item.quantity * product.price,
+            'cart_item_id': cart_item.id
         })
     return render_template('my_cart.html', product_data=product_data)
+
+
+@app.route('/update_quantity/<int:cart_item_id>/<int:new_quantity>', methods=['POST'])
+@login_required
+def update_quantity(cart_item_id, new_quantity):
+    try:
+        cart_item = CartItem.query.get_or_404(cart_item_id)
+
+        cart_item.quantity = new_quantity
+        db.session.commit()
+
+        return jsonify({'success': True, 'message': 'Quantity updated successfully.'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)})
+
+
+@app.route('/remove_item/<int:cart_item_id>', methods=['POST'])
+@login_required
+def remove_item(cart_item_id):
+    try:
+        # Найдем запись о товаре в корзине
+        cart_item = CartItem.query.get_or_404(cart_item_id)
+
+        # Удалим запись о товаре из корзины
+        db.session.delete(cart_item)
+        db.session.commit()
+
+        return jsonify({'success': True, 'message': 'Товар успешно удален из корзины'})
+
+    except Exception as e:
+        print(e)
+        return jsonify({'success': False, 'message': 'Произошла ошибка сервера'}), 500
+
+
+@app.route('/checkout', methods=['GET', 'POST'])
+@login_required
+def checkout_form():
+    form = OrderForm()
+
+    if request.method == 'POST':
+        name = form.name.data
+        address = form.address.data
+        phone = form.phone.data
+
+        # Создание нового заказа
+        new_order = Order(user_id=current_user.id, total_price=0)  # Подставьте свой способ расчета общей стоимости
+        db.session.add(new_order)
+        db.session.commit()
+
+        user_cart = Cart.query.filter_by(user_id=current_user.id).first()
+        cart_items = CartItem.query.filter_by(cart_id=user_cart.id)
+
+        # Перебор товаров в корзине и создание соответствующих записей OrderItem
+        for product_item in cart_items:
+            order_item = OrderItem(
+                order_id=new_order.id,
+                product_id=product_item.product_id,
+                quantity=product_item.quantity
+            )
+            db.session.add(order_item)
+
+        db.session.commit()
+
+        for cart_item in cart_items:
+            db.session.delete(cart_item)
+        db.session.delete(user_cart)
+
+        db.session.commit()
+
+        return render_template('order_confirmation.html',
+                               order=new_order)  # Перенаправление на страницу подтверждения заказа с информацией о заказе
+
+    return render_template('checkout_form.html', form=form)
+
+
+@app.route('/delivery', methods=['GET'])
+def delivery():
+    return render_template('delivery.html')
+
+@app.route('/about', methods=['GET'])
+def about():
+    return render_template('about.html')
 
 
 if __name__ == '__main__':

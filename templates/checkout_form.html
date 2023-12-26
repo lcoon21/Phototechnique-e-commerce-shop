@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <style >
+        .form-container {
+          width: 50%; /* Ширина формы */
+          margin: auto; /* Автоматическое выравнивание по центру */
+          padding: 20px; /* Отступы вокруг формы */
+}
+    </style>
+
+  <h2>Оформление заказа</h2>
+<div class="form-container">
+  <form method="POST" action="{{ url_for('checkout_form') }}">
+{#    {{ form.hidden_tag() }}#}
+    <div class="form-group">
+      {{ form.name.label(class="form-control-label") }}
+      {{ form.name(class="form-control") }}
+      {% for error in form.name.errors %}
+        <span style="color: red;">{{ error }}</span>
+      {% endfor %}
+    </div>
+    <div class="form-group">
+      {{ form.address.label(class="form-control-label") }}
+      {{ form.address(class="form-control") }}
+      {% for error in form.address.errors %}
+        <span style="color: red;">{{ error }}</span>
+      {% endfor %}
+    </div>
+    <div class="form-group">
+      {{ form.phone.label(class="form-control-label") }}
+      {{ form.phone(class="form-control") }}
+      {% for error in form.phone.errors %}
+        <span style="color: red;">{{ error }}</span>
+      {% endfor %}
+    </div>
+    <div class="form-group">
+      {{ form.submit(class="btn btn-primary") }}
+    </div>
+  </form>
+</div>
+{% endblock %}

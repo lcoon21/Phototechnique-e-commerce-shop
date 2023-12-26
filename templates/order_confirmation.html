@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+<style>
+.confirmation-content {
+  overflow: hidden; /* Решает возможные проблемы с обтеканием */
+}
+
+.confirmation-text {
+  float: left;
+  width: 60%; /* Регулируйте размер текстового блока по вашему желанию */
+}
+
+.anecdote {
+  margin-top: 20px;
+}
+
+.image-container {
+  float: right;
+  width: 35%; /* Регулируйте размер блока с изображением по вашему желанию */
+  margin-top: 20px;
+  text-align: center;
+}
+
+.image-container img {
+  width: 100%; /* Устанавливаем ширину изображения в 100% от блока */
+  height: auto; /* Устанавливаем автоматическую высоту для сохранения пропорций */
+}
+
+
+</style>
+
+{% block content %}
+  <h2>Подтверждение заказа</h2>
+    <div class="confirmation-content">
+        <div class="confirmation-text">
+            <p>Спасибо за ваш заказ! Ваш товар будет доставлен в ближайшее время.</p>
+
+  <div class="anecdote">
+    <p>Смешной анекдот от chatGPT:</p>
+    <p>Почему программисты не любят делать покупки в онлайн-магазинах? Потому что они всегда
+        забывают свой "пароль к кошельку" и вместо товаров в корзине оказываются только бескрайние вкладки с восстановлением паролей!</p>
+  </div>
+    </div>
+
+  <div class="image-container">
+    <img src="{{ url_for('static', filename='images/funny_shopping.jpg') }}" alt="Funny Shopping Image">
+  </div>
+    </div>
+{% endblock %}

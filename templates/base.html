@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{#  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">#}
+
     <title >{% block title %}Интернет-магазин фототехники{% endblock %}</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
@@ -21,6 +23,9 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
+            display: flex;
+  flex-direction: column;
+  min-height: 100vh;
         }
         header {
             background-color: #333;
@@ -35,6 +40,7 @@
             padding: 1em;
         }
         main {
+            {#flex: 1;#}
             display: flex;
             flex-wrap: wrap;
             justify-content: space-around;
@@ -56,6 +62,20 @@
             padding: 1em;
             text-align: center;
         }
+        footer {
+            background-color: #222;
+            color: white;
+            padding: 1em;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+            transition: bottom 0.3s ease; /* Добавляем анимацию */
+            margin-top: auto;
+        }
+
+        footer.hidden {
+            bottom: -70px;
+        }
     </style>
 </head>
 <body>
@@ -66,8 +86,8 @@
 
 <nav>
     <a href="{{ url_for('index') }}">Каталог товаров</a>
-    <a href="#delivery">Информация о доставке</a>
-    <a href="#about">О компании</a>
+    <a href="{{ url_for('delivery') }}">Информация о доставке</a>
+    <a href="{{ url_for('about') }}">О компании</a>
     {% if current_user.is_authenticated %}
         <a href="{{ url_for('my_cart') }}">Моя корзина</a>
         <a href="{{ url_for('logout') }}">Выйти</a>
@@ -84,6 +104,18 @@
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+<!-- Подвал страницы -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <p>&copy; 2023 Интернет-магазин фототехники. Все права защищены.</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
 
 </body>
 </html>

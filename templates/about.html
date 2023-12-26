@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <style>
+        .about-us-content {
+      overflow: hidden; /* Решает возможные проблемы с обтеканием */
+    }
+
+    .company-info {
+      float: left;
+      width: 60%;
+      text-align: justify; /* Выравнивание текста по ширине */
+    }
+
+    .company-image {
+      float: right;
+      width: 35%;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .company-image img {
+      width: 100%; /* Устанавливаем ширину изображения в 100% от блока */
+      height: auto; /* Устанавливаем автоматическую высоту для сохранения пропорций */
+      display: block; /* Убираем внешние отступы отображаемого изображения */
+      margin: 0 auto; /* Автоматическое выравнивание по центру */
+    }
+
+    </style>
+
+  <h2>О нашей компании</h2>
+
+  <div class="about-us-content">
+    <div class="company-info">
+      <p>Мы - ваш надежный партнер в мире фототехники. Наша компания специализируется на предоставлении качественной фототехники и аксессуаров.</p>
+      <p>Независимо от того, вы профессиональный фотограф или любитель, мы предлагаем широкий ассортимент камер, объективов, студийного оборудования и многое другое.</p>
+      <p>Наша цель - делать мир фотографии доступным и увлекательным для всех. Мы гордимся тем, что предоставляем высококачественные товары по конкурентоспособным ценам.</p>
+    </div>
+
+    <div class="company-image">
+        <img src="{{ url_for('static', filename='images/stuff.png') }}" alt="About Us Image" style="width: 100%; height: auto; display: block; margin: 0 auto;">
+    </div>
+  </div>
+{% endblock %}
