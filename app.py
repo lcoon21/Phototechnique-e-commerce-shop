@@ -1,12 +1,13 @@
 from flask import Flask, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import LoginManager, logout_user, login_required
-from models import db, Product, User, Cart, CartItem, Order, OrderItem
+from models import db, Product, User, Cart, CartItem, Order, OrderItem, Category
 from flask_migrate import Migrate
 from forms import RegistrationForm, LoginForm, OrderForm
 from flask_bcrypt import Bcrypt
 from datetime import datetime
 from flask_login import current_user, login_user
 from flask_bootstrap import Bootstrap
+from flask_admin import Admin
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
@@ -17,15 +18,76 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 app.config['SECRET_KEY'] = 'secret_key_here'
 bootstrap = Bootstrap(app)
+from flask_admin.contrib.sqla import ModelView
 
 
 with app.app_context():
     db.create_all()
 
+
+admin = Admin(app, name='Админ-панель', template_mode='bootstrap3')
+
+class ProductView(ModelView):
+    column_display_pk = True  # optional, but I like to see the IDs in the list
+    column_hide_backrefs = False
+    form_columns = ['name', 'price', 'description', 'category_id', 'image_url']
+    column_list = ('id', 'name', 'price', 'description', 'category_id', 'image_url')
+
+admin.add_view(ProductView(Product, db.session))
+
+admin.add_view(ModelView(User, db.session))
+class CartView(ModelView):
+    column_display_pk = True  # optional, but I like to see the IDs in the list
+    column_hide_backrefs = False
+    form_columns = ['user_id']
+    column_list = ('id', 'user_id')
+
+admin.add_view(CartView(Cart, db.session))
+
+class CartItemView(ModelView):
+    column_display_pk = True  # optional, but I like to see the IDs in the list
+    column_hide_backrefs = False
+    form_columns = ['quantity', 'cart_id', 'product_id']
+    column_list = ('id', 'quantity', 'cart_id', 'product_id')
+
+admin.add_view(CartItemView(CartItem, db.session))
+
+class OrderView(ModelView):
+    column_display_pk = True  # optional, but I like to see the IDs in the list
+    column_hide_backrefs = False
+    form_columns = ['user_id', 'total_price', 'created_at']
+    column_list = ('id', 'user_id', 'total_price', 'created_at')
+
+admin.add_view(OrderView(Order, db.session))
+
+class OrderItemView(ModelView):
+    column_display_pk = True  # optional, but I like to see the IDs in the list
+    column_hide_backrefs = False
+    form_columns = ['order_id', 'product_id', 'quantity']
+    column_list = ('id', 'order_id', 'product_id', 'quantity')
+
+admin.add_view(OrderItemView(OrderItem, db.session))
+
+admin.add_view(ModelView(Category, db.session))
+
+
 @app.route('/')
 def index():
     products = Product.query.limit(20).all()
-    return render_template('index.html', products=products, current_user=current_user)
+    categories = Category.query.all()
+    return render_template('index.html', products=products, current_user=current_user, categories=categories)
+
+
+@app.route('/category/<int:category_id>')
+def category(category_id):
+    # Fetch the category and its products from the database
+    category = Category.query.get(category_id)
+    categories = Category.query.all()
+
+    products = Product.query.filter_by(category_id=category.id).all()
+
+    # Render the template with the category and its products
+    return render_template('index.html', category=category, products=products, categories=categories)
 
 
 @login_manager.user_loader
@@ -50,8 +112,6 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    # if current_user.is_authenticated:
-    #     return redirect(url_for('index'))
 
     form = LoginForm()
 
@@ -120,7 +180,7 @@ def my_cart():
     cart = Cart.query.filter_by(user_id=user_id).first()
 
     if cart:
-        cart_items = CartItem.query.filter_by(cart_id=cart.id).all() ##############
+        cart_items = CartItem.query.filter_by(cart_id=cart.id).all()
     else:
         return render_template('index.html')
 
@@ -188,6 +248,13 @@ def checkout_form():
         user_cart = Cart.query.filter_by(user_id=current_user.id).first()
         cart_items = CartItem.query.filter_by(cart_id=user_cart.id)
 
+        total_price = 0
+
+        for i in cart_items:
+            product_=Product.query.filter_by(id=i.product_id).first()
+            print(product_)
+            total_price=total_price + (i.quantity*product_.price)
+
         # Перебор товаров в корзине и создание соответствующих записей OrderItem
         for product_item in cart_items:
             order_item = OrderItem(
@@ -196,6 +263,9 @@ def checkout_form():
                 quantity=product_item.quantity
             )
             db.session.add(order_item)
+
+        # order=Order.query.filter_by(user_id=current_user.id).last()
+        new_order.total_price=total_price
 
         db.session.commit()
 

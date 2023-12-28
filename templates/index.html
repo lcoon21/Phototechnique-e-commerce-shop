@@ -19,18 +19,51 @@
 
 <main>
     {% for product in products %}
-      <div class="product">
-          <img src="{{ url_for('static', filename=product.image_url) }}" alt="{{ product.name }}" class="compressed-image">
-          <h3>{{ product.name }}</h3>
-          <p>Цена: ${{ product.price }}</p>
-          <button onclick="addToCart({{ product.id }})" class="btn btn-secondary" >Добавить в корзину</button>
+      <div class="product" onmouseover="showDescription(this)" onmouseout="hideDescription(this)">
+          <div class="product-info">
+              <img src="{{ url_for('static', filename=product.image_url) }}" alt="{{ product.name }}" class="compressed-image">
+              <h3>{{ product.name }}</h3>
+              <p>Цена: ${{ product.price }}</p>
+              <button onclick="addToCart({{ product.id }})" class="btn btn-secondary">Добавить в корзину</button>
+          </div>
           <div class="description">
-                <p>{{ product.description }}</p>
-            </div>
-
+              <p>{{ product.description }}</p>
+          </div>
       </div>
     {% endfor %}
 </main>
+
+<style>
+    .product {
+        border: 1px solid #ddd;
+        margin: 1em;
+        padding: 1em;
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+    }
+
+    .compressed-image {
+        max-width: 200px;
+        height: auto;
+    }
+
+    .product-info {
+        flex-grow: 1;
+    }
+
+    .description {
+        position: absolute;
+        top: 0;
+        left: 100%; /* Расстояние справа от .product-info */
+        width: 200px; /* Ширина всплывающего блока */
+        background-color: #fff;
+        border: 1px solid #ddd;
+        padding: 10px;
+        display: none;
+        z-index: 1; /* Поднимаем блок над другими элементами */
+    }
+</style>
 
 <script>
     function addToCart(productId) {
@@ -53,6 +86,7 @@
             console.error('Ошибка при добавлении товара в корзину:', error);
         });
     }
+
     function showDescription(element) {
         var descriptionElement = element.querySelector('.description');
         descriptionElement.style.display = 'block';
@@ -64,4 +98,3 @@
     }
 </script>
 {% endblock %}
-

@@ -90,15 +90,15 @@
         </div>
     {% endfor %}
 
-    {% set vars = { 'total_cart_price' : 0} %}
-    {% for product_item in product_data %}
-        {% if vars.update({'total_cart_price' : vars.total_cart_price + product_item.product_price}) %} {% endif %}
-    {% endfor %}
-
-  <div class="total-cost">
-    <p>Полная стоимость корзины: {{ vars.total_cart_price }} руб.</p>
-    </div>
-</div>
+{#    {% set vars = { 'total_cart_price' : 0} %}#}
+{#    {% for product_item in product_data %}#}
+{#        {% if vars.update({'total_cart_price' : vars.total_cart_price + product_item.product_price}) %} {% endif %}#}
+{#    {% endfor %}#}
+{##}
+{#  <div class="total-cost">#}
+{#    <p>Полная стоимость корзины: {{ vars.total_cart_price }} руб.</p>#}
+{#    </div>#}
+{#    </div>#}
 
 
 <button id="checkout-btn" class="btn btn-primary checkout-btn">Оформить заказ</button>

@@ -10,7 +10,7 @@ db = SQLAlchemy()
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
-
+    products = db.relationship('Product', backref='category', lazy=True)
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -48,7 +48,7 @@ class Cart(db.Model):
 class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    items = db.relationship('OrderItem', backref='order', lazy=True)
+    # items = db.relationship('OrderItem', backref='order', lazy=True)
     total_price = db.Column(db.Float, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
